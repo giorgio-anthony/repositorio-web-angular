@@ -1,0 +1,71 @@
+<div class="container">
+  <header class="header">
+    <h2>🔍 Buscar Repositórios</h2>
+    <p class="subtitle">Pesquise repositórios públicos do GitHub e marque seus favoritos</p>
+  </header>
+
+  <section class="search-area">
+    <div class="search-row">
+      <input type="text" [(ngModel)]="repos" placeholder="Digite o nome do usuário ou repositório" />
+      <div class="buttons">
+        <button class="btn primary" (click)="buscarRepos()">Buscar</button>
+        <button class="btn" (click)="showRelevance()">Ordenar por relevância</button>
+        <button class="btn" (click)="showFavorites()">Favoritos</button>
+        <button class="btn danger" (click)="clear()">Limpar</button>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="repositorios.length > 0" class="results">
+    <h3 class="results-title">📊 Resultados para "{{ repos }}" ({{ repositorios.length }} repositórios)</h3>
+
+    <div class="table-container">
+      <table class="repo-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Nome do Repositório</th>
+            <th style="width: 35%;">Descrição</th>
+            <th style="width: 8%; text-align: center;">⭐ Stars</th>
+            <th style="width: 8%; text-align: center;">🔀 Forks</th>
+            <th style="width: 8%; text-align: center;">👀 Watchers</th>
+            <th style="width: 10%; text-align: center;">📈 Relevância</th>
+            <th style="width: 6%; text-align: center;">⭐ Favorito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repo of repositorios; let i = index" [class.even]="i % 2 === 0">
+            <td class="repo-name">
+              <a [href]="repo.htmlUrl" target="_blank" rel="noopener noreferrer">
+                {{ repo.fullName }}
+              </a>
+            </td>
+            <td class="repo-desc" [title]="repo.description">{{ repo.description || 'Sem descrição' }}</td>
+            <td style="text-align: center; font-weight: 500;">{{ repo.stars | number }}</td>
+            <td style="text-align: center; font-weight: 500;">{{ repo.forks | number }}</td>
+            <td style="text-align: center; font-weight: 500;">{{ repo.watchers | number }}</td>
+            <td style="text-align: center;">
+              <span class="relevance-badge">{{ repo.relevanceScore ? (repo.relevanceScore | number:'1.2-2') : '—' }}</span>
+            </td>
+            <td style="text-align: center;">
+              <button 
+                class="btn-favorite" 
+                [class.favorite]="isFavorited(repo)"
+                (click)="toggleFavorite(repo)"
+                [title]="isFavorited(repo) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
+                {{ isFavorited(repo) ? '⭐' : '☆' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section *ngIf="repositorios.length === 0 && repos" class="empty">
+    <p>⚠️ Nenhum repositório encontrado para "{{ repos }}"</p>
+  </section>
+
+  <section *ngIf="repositorios.length === 0 && !repos" class="empty">
+    <p>🚀 Digite um nome e clique em "Buscar" para começar</p>
+  </section>
+</div>
